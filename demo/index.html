@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skin Quiz — Brightening Routine Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf6f1; --card:#ffffff; --ink:#2b2320; --muted:#7a6c66; --line:#eadfd7;
+  --accent:#c9774f; --accent-d:#a85d39; --soft:#f6e7dc; --sun:#f2b84b; --moon:#5b5f97;
+  --ok:#3f7d5a; --warn:#b4492f; --warn-bg:#fbe9e4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:700;line-height:1.2}
+.hero{text-align:center;padding:28px 8px 8px}
+.hero .badge{display:inline-block;background:var(--soft);color:var(--accent-d);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:99px}
+.hero h1{font-size:34px;margin:14px 0 10px}
+.hero p{color:var(--muted);max-width:460px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;margin-top:18px;box-shadow:0 6px 24px rgba(120,80,50,.06)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:14px 22px;font:700 16px 'DM Sans',sans-serif;cursor:pointer;transition:.15s}
+.btn-primary{background:var(--accent);color:#fff;width:100%}
+.btn-primary:hover{background:var(--accent-d)}
+.btn-primary:disabled{background:#d9c6bb;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--muted);padding:10px 12px}
+.btn-ghost:hover{color:var(--ink)}
+.btn-outline{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+.btn-outline:hover{border-color:var(--accent)}
+.progress{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0 4px}
+.progress div{height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.step-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.q-title{font-size:24px;margin:16px 0 6px}
+.q-help{color:var(--muted);font-size:15px;margin-bottom:16px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;font:inherit;color:inherit;transition:.15s;width:100%}
+.opt:hover{border-color:#ddc3b3}
+.opt.sel{border-color:var(--accent);background:#fdf3ec}
+.opt .ico{font-size:24px;width:32px;text-align:center;flex-shrink:0}
+.opt .swatch{width:30px;height:30px;border-radius:50%;flex-shrink:0;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.opt b{display:block;font-size:16px}
+.opt small{color:var(--muted);font-size:13.5px}
+.opt .check{margin-left:auto;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;display:grid;place-items:center;font-size:13px;color:#fff}
+.opt.sel .check{background:var(--accent);border-color:var(--accent)}
+.nav{display:flex;gap:10px;align-items:center;margin-top:20px}
+.nav .btn-primary{flex:1}
+.hidden{display:none!important}
+/* results */
+.summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:var(--soft);color:var(--accent-d);font-size:13px;font-weight:500;padding:6px 11px;border-radius:99px}
+.tabs{display:flex;background:var(--soft);border-radius:14px;padding:4px;margin-top:22px;position:sticky;top:8px;z-index:5}
+.tab{flex:1;border:none;background:transparent;font:700 15px 'DM Sans',sans-serif;padding:11px 6px;border-radius:11px;cursor:pointer;color:var(--muted)}
+.tab.active{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.panel h2{font-size:22px;display:flex;align-items:center;gap:10px}
+.panel .sub{color:var(--muted);font-size:14.5px;margin:4px 0 6px}
+.stepc{display:flex;gap:14px;padding:16px 0;border-top:1px solid var(--line)}
+.stepc:first-of-type{border-top:none}
+.num{width:32px;height:32px;border-radius:50%;background:var(--soft);color:var(--accent-d);font-weight:700;display:grid;place-items:center;flex-shrink:0;font-size:14px}
+.am .num{background:#fdf1d8;color:#9a6a08}
+.pm .num{background:#e8e9f6;color:var(--moon)}
+.stepc .lbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stepc .prod{font-weight:700;font-size:16.5px;margin:2px 0}
+.tier{display:inline-block;font-size:11.5px;font-weight:700;background:#eef4ef;color:var(--ok);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:2px}
+.freq{display:inline-block;font-size:11.5px;font-weight:700;background:#e8e9f6;color:var(--moon);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:2px}
+.why{font-size:14.5px;color:#4d433f}
+.alt{font-size:13.5px;color:var(--muted);margin-top:4px}
+.ing{display:inline-block;font-size:12px;color:var(--accent-d);background:#fdf3ec;border-radius:6px;padding:2px 7px;margin-top:6px}
+.note{border-radius:14px;padding:14px 16px;font-size:14.5px;margin-top:14px}
+.note.info{background:var(--soft)}
+.note.warn{background:var(--warn-bg);color:#6e2a1a}
+.note b{display:block;margin-bottom:3px}
+ul.clean{padding-left:18px;margin-top:6px}
+ul.clean li{margin:5px 0;font-size:14.5px}
+.timeline{display:grid;gap:10px;margin-top:10px}
+.tl{display:flex;gap:12px;align-items:flex-start}
+.tl span{background:var(--soft);color:var(--accent-d);font-weight:700;font-size:12.5px;padding:4px 9px;border-radius:8px;white-space:nowrap;min-width:84px;text-align:center}
+.tl p{font-size:14.5px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+.disc{font-size:12.5px;color:var(--muted);text-align:center;margin-top:26px}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.feat div{background:var(--soft);border-radius:14px;padding:12px 8px;text-align:center;font-size:13px;color:var(--accent-d);font-weight:500}
+.brandbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
+.logo{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font:700 17px 'Fraunces',serif;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover}
+.bname{font:700 18px 'Fraunces',serif}
+.sample{font-size:11px;font-weight:700;background:#fff3cd;color:#8a6500;padding:3px 8px;border-radius:99px}
+.cta{background:var(--accent);color:#fff;border-radius:20px;padding:22px;margin-top:18px;text-align:center}
+.cta h3{font-size:21px;margin-bottom:6px}
+.cta p{opacity:.92;font-size:14.5px}
+.cta a.btn{background:#fff;color:var(--accent-d);margin-top:14px;text-decoration:none;width:100%}
+.cta .contact{font-size:13.5px;margin-top:12px;opacity:.95}
+.lead input{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font:inherit;margin-top:10px;background:#fff}
+.lead label{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);margin-top:10px}
+.demos{text-align:center;font-size:12.5px;color:var(--muted);margin-top:18px}
+.demos a{color:var(--accent-d);margin:0 5px}
+.powered{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
+.feat div span{display:block;font-size:22px;margin-bottom:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- INTRO -->
+  <section id="intro">
+    <div class="hero">
+      <div class="brandbar"><div class="logo" id="logo"></div><span class="bname" id="bname"></span><span class="sample hidden" id="sampleTag">Sample brand</span></div>
+      <h1 id="tagline">Your brightening routine, built for your skin</h1>
+      <p>Answer 9 quick questions about your skin. You'll get product picks plus a step-by-step morning and night routine to fade dark spots and even out your tone safely.</p>
+    </div>
+    <div class="feat">
+      <div><span>🧴</span>Product picks</div>
+      <div><span>☀️</span>AM routine</div>
+      <div><span>🌙</span>PM routine</div>
+    </div>
+    <button class="btn btn-primary" id="startBtn">Start skin quiz →</button>
+    <button class="btn btn-ghost hidden" id="lastBtn" style="width:100%;margin-top:8px">View my last results</button>
+    <p class="disc">Takes about 2 minutes. Educational guidance, not medical advice.</p>
+    <div class="demos hidden" id="demos"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="card">
+      <div class="step-meta"><span id="stepLbl">Question 1 of 9</span><span id="stepCat"></span></div>
+      <div class="progress"><div id="bar"></div></div>
+      <h2 class="q-title" id="qTitle"></h2>
+      <p class="q-help" id="qHelp"></p>
+      <div class="opts" id="opts"></div>
+      <div class="nav">
+        <button class="btn btn-ghost" id="backBtn">← Back</button>
+        <button class="btn btn-primary" id="nextBtn" disabled>Next</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden">
+    <div class="hero" style="padding-top:12px">
+      <span class="badge">Your plan</span>
+      <h1 style="font-size:30px">Your brightening routine</h1>
+      <div class="summary" id="summary" style="justify-content:center"></div>
+    </div>
+    <div id="topNotes"></div>
+    <div class="tabs">
+      <button class="tab active" data-t="am">☀️ Morning</button>
+      <button class="tab" data-t="pm">🌙 Night</button>
+      <button class="tab" data-t="tips">📋 Tips</button>
+    </div>
+    <div class="card panel am" id="p-am"></div>
+    <div class="card panel pm hidden" id="p-pm"></div>
+    <div class="card panel hidden" id="p-tips"></div>
+    <div class="cta" id="cta"></div>
+    <div class="card lead hidden" id="lead">
+      <h3 style="font-size:19px">Get your routine by email</h3>
+      <p class="sub" style="color:var(--muted);font-size:14px">We'll send your plan and let you know about offers on your products.</p>
+      <form id="leadForm">
+        <input id="lName" placeholder="First name" required autocomplete="given-name">
+        <input id="lEmail" type="email" placeholder="Email" required autocomplete="email">
+        <label><input type="checkbox" id="lOk" required style="width:auto;margin-top:3px"> I agree to be contacted by <span class="bn"></span>.</label>
+        <button class="btn btn-primary" style="margin-top:12px">Send my routine</button>
+      </form>
+      <p id="leadMsg" class="note info hidden"></p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-outline" id="copyBtn">📋 Copy routine</button>
+      <button class="btn btn-outline" id="redoBtn">↻ Retake quiz</button>
+    </div>
+    <p class="powered" id="powered"></p>
+    <p class="disc">Product names are examples of well-reviewed options in each price range; formulas and prices change, so check labels before buying. This is general skincare guidance, not a diagnosis. See a dermatologist for persistent, spreading, or sudden pigmentation.</p>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   CLIENT SETTINGS: edit this block for each client. Nothing else.
+   ---------------------------------------------------------------------
+   products: replace any recommendation. Use the step key and
+   ['Product name', 'One-line reason'].  Leave out a key to keep the default.
+   Keys: cleanser.oily  cleanser.dry  cleanser.sensitive
+         moist.oily  moist.dry  moist.sensitive
+         vitc  vitcGentle  txaAM  niacin  arbutin  azelaic  txaPM
+         retinoidAcne  retinoidNew  retinoidPro  bha  aha
+         spf.light  spf.deep  spf.tintLight  spf.tintDeep
+   ===================================================================== */
+const CONFIG = {
+  brandName: 'Sylvie Glow Guide',
+  initials: 'SG',
+  logoUrl: '',                 // optional: a data:image/png;base64,... string
+  tagline: 'Your brightening routine, built for your skin',
+  colors: { accent:'#c9774f', accentDark:'#a85d39', soft:'#f6e7dc', bg:'#fbf6f1' },
+  bookingUrl: '',              // e.g. https://www.vagaro.com/yourspa
+  bookingLabel: 'Book a consultation',
+  ctaText: 'Want a pro to fine-tune this? Book a skin consultation.',
+  phone: '', address: '', instagram: '',
+  askBudget: true,             // false = skip the budget question
+  defaultBudget: '$$',         // used when askBudget is false
+  leadCapture: false,          // Pro plan: show the email form
+  leadEndpoint: '',            // form endpoint (e.g. Formspree URL) once hosted
+  products: {},
+  poweredBy: true,             // shows "Powered by Sylvie Glow Guide"
+  sample: false,               // shows a "Sample brand" tag (demos only)
+  showDemoSwitcher: true       // set false for client copies
+};
+
+/* Demo brands for sales calls. Open the link with #lumiere or #beauty-supply. */
+const DEMOS = {
+  'lumiere': { brandName:'Lumière Skin Studio', initials:'LS', sample:true,
+    tagline:'Your personal glow plan from Lumière', colors:{accent:'#7a4b6e',accentDark:'#5c3553',soft:'#f1e6ee',bg:'#faf6f8'},
+    bookingUrl:'https://example.com', bookingLabel:'Book a brightening facial', ctaText:'Pair your routine with our Even-Tone Facial for faster results.',
+    phone:'(610) 555-0142', address:'Sample address, Pottstown, PA', instagram:'@lumiere.sample', leadCapture:true,
+    products:{ 'txaPM':['Lumière Even-Tone Night Serum (house brand)','Our tranexamic acid serum, available at the front desk.'] } },
+  'beauty-supply': { brandName:'Melanin Glow Beauty Supply', initials:'MG', sample:true,
+    tagline:'Find your even-tone routine, made for melanin-rich skin', colors:{accent:'#9a6a1f',accentDark:'#7a5014',soft:'#f6ecd9',bg:'#fcf8f0'},
+    bookingUrl:'', ctaText:'Show this screen to our staff and we’ll pull your products from the shelf.',
+    phone:'(215) 555-0198', address:'Sample address, Philadelphia, PA', askBudget:true }
+};
+let C = CONFIG;
+
+/* ---------------- QUESTIONS ---------------- */
+const Q = [
+  {id:'type', cat:'Skin type', title:'What is your skin type?', help:'Think about how your face feels about 2 hours after washing, with nothing on it.', opts:[
+    {v:'oily', i:'💧', t:'Oily', s:'Shiny all over, visible pores, makeup slides off'},
+    {v:'dry', i:'🏜️', t:'Dry', s:'Feels tight, flaky or rough patches'},
+    {v:'combination', i:'☯️', t:'Combination', s:'Oily T-zone (forehead, nose, chin), normal or dry cheeks'},
+    {v:'normal', i:'🙂', t:'Normal', s:'Comfortable, rarely too oily or too dry'},
+    {v:'sensitive', i:'🌸', t:'Sensitive', s:'Often red, itchy, stings with new products'}]},
+  {id:'tone', cat:'Skin tone', title:'Which best matches your natural skin tone?', help:'Deeper skin tones are more likely to darken after irritation, so this changes which actives are safest for you.', opts:[
+    {v:'fair', c:'#f6dccb', t:'Fair / light', s:'Burns easily, rarely tans'},
+    {v:'medium', c:'#e2b48f', t:'Medium', s:'Sometimes burns, tans gradually'},
+    {v:'olive', c:'#c38e63', t:'Olive / tan', s:'Rarely burns, tans easily'},
+    {v:'brown', c:'#8d5a3b', t:'Brown', s:'Very rarely burns'},
+    {v:'deep', c:'#5a3624', t:'Deep brown / dark', s:'Almost never burns'}]},
+  {id:'concerns', multi:true, cat:'Concerns', title:'What would you like to improve?', help:'Pick all that apply.', opts:[
+    {v:'pih', i:'🎯', t:'Marks left after acne or bumps', s:'Dark spots where pimples, ingrowns or bites healed'},
+    {v:'spots', i:'☀️', t:'Sun spots / age spots', s:'Flat brown spots from sun exposure'},
+    {v:'melasma', i:'🗺️', t:'Melasma / patchy darkening', s:'Larger patches on cheeks, forehead or upper lip'},
+    {v:'uneven', i:'🎨', t:'Uneven or blotchy tone', s:'Some areas darker than others'},
+    {v:'dull', i:'✨', t:'Dullness / lack of glow', s:'Skin looks tired or flat'}]},
+  {id:'goal', cat:'Goal', title:'Which outcome are you hoping for?', help:'This helps us set honest expectations.', opts:[
+    {v:'fade', i:'🔍', t:'Fade specific dark spots', s:'Target marks and patches'},
+    {v:'even', i:'⚖️', t:'An even, clear tone', s:'Spots blend in with the rest of my skin'},
+    {v:'glow', i:'🌟', t:'Brighter, glowing skin', s:'Radiance and healthy texture'},
+    {v:'lighter', i:'🤍', t:'A lighter overall complexion', s:'Lighter than my natural tone'}]},
+  {id:'sens', cat:'Sensitivity', title:'How does your skin react to new products?', help:'', opts:[
+    {v:'rarely', i:'💪', t:'Rarely reacts', s:'I can use most products without problems'},
+    {v:'sometimes', i:'🤔', t:'Sometimes stings or gets red', s:'Strong acids or retinol can bother me'},
+    {v:'often', i:'🔥', t:'Reacts often', s:'Many products cause redness, burning or rashes'}]},
+  {id:'acne', cat:'Breakouts', title:'Do you currently get breakouts?', help:'', opts:[
+    {v:'yes', i:'🔴', t:'Yes, regularly', s:'Active pimples most weeks'},
+    {v:'some', i:'🟠', t:'Occasionally', s:'Around my period or when stressed'},
+    {v:'no', i:'🟢', t:'Rarely or never', s:''}]},
+  {id:'preg', cat:'Safety', title:'Are you pregnant, trying to conceive, or breastfeeding?', help:'Some brightening ingredients (retinoids, hydroquinone) should be avoided during this time.', opts:[
+    {v:'yes', i:'🤰', t:'Yes', s:''},
+    {v:'no', i:'✅', t:'No', s:''}]},
+  {id:'exp', cat:'Experience', title:'How experienced are you with active ingredients?', help:'Actives include vitamin C, retinol, AHAs/BHAs and similar.', opts:[
+    {v:'new', i:'🌱', t:'New to this', s:'I mostly use cleanser and lotion'},
+    {v:'some', i:'🌿', t:'Some experience', s:"I've used a serum or exfoliant before"},
+    {v:'pro', i:'🌳', t:'Experienced', s:'I use retinoids or acids regularly'}]},
+  {id:'budget', cat:'Budget', title:"What's your budget per product?", help:'', opts:[
+    {v:'$', i:'💵', t:'Budget-friendly', s:'Mostly under $20 (drugstore)'},
+    {v:'$$', i:'💳', t:'Mid-range', s:'About $20–$50'},
+    {v:'$$$', i:'💎', t:'Premium', s:'$50+ is fine'}]}
+];
+
+/* ---------------- PRODUCT CATALOG ---------------- */
+const BASE_P = {
+  cleanser:{
+    oily:{ '$':['CeraVe Foaming Facial Cleanser','Removes oil without stripping; contains ceramides and niacinamide.'],
+           '$$':['La Roche-Posay Toleriane Purifying Foaming Cleanser','Deep cleans oily skin while staying gentle.'],
+           '$$$':['SkinCeuticals Simply Clean','Light gel cleanser for oily and combination skin.']},
+    dry:{  '$':['CeraVe Hydrating Facial Cleanser','Creamy, non-foaming; keeps your moisture barrier intact.'],
+           '$$':['La Roche-Posay Toleriane Hydrating Gentle Cleanser','Milky cleanser that leaves skin soft, not tight.'],
+           '$$$':['Fresh Soy Face Cleanser','Gentle gel cleanser that also removes light makeup.']},
+    sensitive:{ '$':['Vanicream Gentle Facial Cleanser','Free of fragrance, dyes and common irritants.'],
+           '$$':['Avène Tolerance Extremely Gentle Cleanser','Made for very reactive skin; can be used without water.'],
+           '$$$':['Avène Tolerance Extremely Gentle Cleanser','Made for very reactive skin; premium options rarely beat it.']}
+  },
+  vitc:{ '$':['Timeless 20% Vitamin C + E Ferulic Acid Serum','Strong, affordable vitamin C. Store it cool and dark.'],
+         '$$':['Paula’s Choice C15 Super Booster','15% vitamin C with vitamin E and ferulic acid.'],
+         '$$$':['SkinCeuticals C E Ferulic','The most studied vitamin C serum (15% L-ascorbic acid).']},
+  vitcGentle:{ '$':['The Ordinary Ascorbyl Glucoside Solution 12%','A gentler vitamin C form that rarely stings.'],
+         '$$':['Paula’s Choice 10% Niacinamide Booster','Niacinamide brightens and calms; easier on reactive skin than vitamin C.'],
+         '$$$':['SkinCeuticals Phyto A+ Brightening Treatment','Azelaic acid and botanicals in a lightweight gel; brightens without vitamin C sting.']},
+  txaAM:{ '$':['Good Molecules Discoloration Correcting Serum','Tranexamic acid + niacinamide; gentle enough for sensitive skin.'],
+         '$$':['Paula’s Choice Clinical Discoloration Repair Serum','Tranexamic acid + niacinamide + bakuchiol.'],
+         '$$$':['SkinCeuticals Discoloration Defense','Tranexamic acid, kojic acid and niacinamide.']},
+  niacin:{ '$':['The Ordinary Niacinamide 10% + Zinc 1%','Reduces oiliness and fades marks over time.'],
+         '$$':['Paula’s Choice 10% Niacinamide Booster','Brightens, refines pores, strengthens the skin barrier.'],
+         '$$$':['SkinCeuticals Metacell Renewal B3','Niacinamide-rich cream serum for tone and texture.']},
+  arbutin:{ '$':['The Ordinary Alpha Arbutin 2% + HA','Targets dark spots by calming pigment production.'],
+         '$$':['Naturium Alpha Arbutin Serum 2%','Alpha arbutin with hydrating support.'],
+         '$$$':['SkinCeuticals Discoloration Defense','Tranexamic acid + kojic acid + niacinamide for stubborn spots.']},
+  azelaic:{ '$':['The Ordinary Azelaic Acid Suspension 10%','Fades post-acne marks and calms breakouts. Safe in pregnancy.'],
+         '$$':['Paula’s Choice 10% Azelaic Acid Booster','Smooth texture that layers well; fades marks and redness.'],
+         '$$$':['Paula’s Choice 10% Azelaic Acid Booster','Ask a dermatologist about prescription azelaic acid 15% (Finacea) for stronger results.']},
+  txaPM:{ '$':['The Inkey List Tranexamic Acid Night Treatment','Tranexamic acid targets the patchy pigment in melasma.'],
+         '$$':['Paula’s Choice Clinical Discoloration Repair Serum','Tranexamic acid + niacinamide for stubborn patches.'],
+         '$$$':['SkinCeuticals Discoloration Defense','A top pick for melasma-prone skin.']},
+  retinoidAcne:{ '$':['Differin Adapalene Gel 0.1%','Over-the-counter retinoid that treats acne and fades marks.'],
+         '$$':['Differin Adapalene Gel 0.1%','The best-studied OTC retinoid for acne-prone skin.'],
+         '$$$':['Differin Adapalene Gel 0.1% (or ask a derm about tretinoin)','A dermatologist can prescribe stronger tretinoin if needed.']},
+  retinoidNew:{ '$':['The Ordinary Granactive Retinoid 2% Emulsion','A gentle retinoid for beginners.'],
+         '$$':['Paula’s Choice 0.3% Retinol + 2% Bakuchiol','Low-strength retinol with soothing support.'],
+         '$$$':['SkinCeuticals Retinol 0.3','Entry-level strength from a clinical brand.']},
+  retinoidPro:{ '$':['The Ordinary Retinol 0.5% in Squalane','Mid-strength retinol for experienced users.'],
+         '$$':['Paula’s Choice 1% Retinol Treatment','High-strength retinol for tone and texture.'],
+         '$$$':['SkinCeuticals Retinol 1.0','Maximum-strength retinol; only if you tolerate retinoids well.']},
+  bha:{ '$':['The Ordinary Salicylic Acid 2% Solution','Clears pores and helps marks fade faster.'],
+         '$$':['Paula’s Choice 2% BHA Liquid Exfoliant','Cult-favorite pore-clearing exfoliant.'],
+         '$$$':['Paula’s Choice 2% BHA Liquid Exfoliant','Premium brands rarely improve on this one.']},
+  aha:{ '$':['The Ordinary Lactic Acid 5% + HA','Mild exfoliant that brightens and hydrates.'],
+         '$$':['Naturium Glycolic Acid Exfoliating Toner 10%','Resurfaces dull skin for more glow.'],
+         '$$$':['Drunk Elephant T.L.C. Framboos Glycolic Night Serum','AHA/BHA blend for smoother, brighter skin.']},
+  moist:{
+    oily:{ '$':['Neutrogena Hydro Boost Water Gel','Lightweight, oil-free hydration.'],
+           '$$':['Clinique Dramatically Different Moisturizing Gel','Oil-free gel that won’t clog pores.'],
+           '$$$':['SkinCeuticals Daily Moisture','Light, pore-friendly daily moisturizer.']},
+    dry:{  '$':['CeraVe Moisturizing Cream','Rich ceramide cream that repairs the barrier.'],
+           '$$':['First Aid Beauty Ultra Repair Cream','Soothing colloidal oatmeal for dry, rough skin.'],
+           '$$$':['Kiehl’s Ultra Facial Cream','Long-lasting, comfortable hydration.']},
+    sensitive:{ '$':['Vanicream Daily Facial Moisturizer','Fragrance-free and very gentle.'],
+           '$$':['La Roche-Posay Toleriane Double Repair Face Moisturizer','Ceramides + niacinamide to calm and repair.'],
+           '$$$':['Avène Tolerance Control Soothing Skin Recovery Cream','Sterile formula for highly reactive skin.']}
+  },
+  spf:{
+    light:{ '$':['Beauty of Joseon Relief Sun: Rice + Probiotics SPF 50+','Light and comfortable with no white cast.'],
+            '$$':['La Roche-Posay Anthelios Melt-In Milk Sunscreen SPF 60','Broad-spectrum, water-resistant protection.'],
+            '$$$':['EltaMD UV Clear Broad-Spectrum SPF 46','Zinc-based with niacinamide; good for acne-prone skin.']},
+    deep:{  '$':['Black Girl Sunscreen SPF 30','Made for melanin-rich skin; no white cast.'],
+            '$$':['Beauty of Joseon Relief Sun: Rice + Probiotics SPF 50+','Sheer finish with no white cast on deeper tones.'],
+            '$$$':['Supergoop! Unseen Sunscreen SPF 40','Invisible gel; doubles as a makeup primer.']},
+    tintLight:{ '$':['La Roche-Posay Anthelios Tinted Mineral SPF 50','Iron oxides in the tint also block visible light, which worsens melasma.'],
+            '$$':['La Roche-Posay Anthelios Tinted Mineral SPF 50','Iron oxides in the tint also block visible light, which worsens melasma.'],
+            '$$$':['EltaMD UV Clear Tinted SPF 46','Tinted with iron oxides for visible-light protection.']},
+    tintDeep:{ '$':['Unsun Mineral Tinted Face Sunscreen SPF 30','Tinted for deeper skin tones; iron oxides help with melasma.'],
+            '$$':['Unsun Mineral Tinted Face Sunscreen SPF 30','Tinted for deeper skin tones; iron oxides help with melasma.'],
+            '$$$':['Unsun Mineral Tinted Face Sunscreen SPF 30','Few premium tinted options suit deep tones as well as this one.']}
+  }
+};
+
+/* ---------------- STATE ---------------- */
+let A = {}; let idx = 0; let plan = null; let P; let QS = Q;
+const $ = s => document.querySelector(s);
+const store = {get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+function show(id){['intro','quiz','results'].forEach(s=>$('#'+s).classList.toggle('hidden',s!==id));window.scrollTo(0,0)}
+
+/* ---------------- QUIZ RENDER ---------------- */
+function renderQ(){
+  const q = QS[idx];
+  $('#stepLbl').textContent = `Question ${idx+1} of ${QS.length}`;
+  $('#stepCat').textContent = q.cat;
+  $('#bar').style.width = ((idx)/QS.length*100+4)+'%';
+  $('#qTitle').textContent = q.title;
+  $('#qHelp').textContent = q.help; $('#qHelp').classList.toggle('hidden',!q.help);
+  const box = $('#opts'); box.innerHTML='';
+  q.opts.forEach(o=>{
+    const b = document.createElement('button'); b.className='opt';
+    const cur = A[q.id];
+    const sel = q.multi ? (cur||[]).includes(o.v) : cur===o.v;
+    if(sel) b.classList.add('sel');
+    b.innerHTML = (o.c?`<span class="swatch" style="background:${o.c}"></span>`:`<span class="ico">${o.i}</span>`)+
+      `<span><b>${o.t}</b>${o.s?`<small>${o.s}</small>`:''}</span><span class="check">✓</span>`;
+    b.onclick = ()=>{
+      if(q.multi){ let arr=A[q.id]||[]; arr = arr.includes(o.v)?arr.filter(x=>x!==o.v):[...arr,o.v]; A[q.id]=arr; renderQ(); }
+      else { A[q.id]=o.v; renderQ(); setTimeout(()=>{ if(idx<QS.length-1){idx++;renderQ()} },220); }
+    };
+    box.appendChild(b);
+  });
+  const ans = A[q.id];
+  $('#nextBtn').disabled = q.multi ? !(ans&&ans.length) : !ans;
+  $('#nextBtn').textContent = idx===QS.length-1 ? 'See my routine ✨' : 'Next';
+  $('#backBtn').style.visibility = 'visible';
+}
+$('#startBtn').onclick = ()=>{A={};idx=0;show('quiz');renderQ()};
+$('#backBtn').onclick = ()=>{ if(idx===0){show('intro')} else {idx--;renderQ()} };
+$('#nextBtn').onclick = ()=>{ if(idx<QS.length-1){idx++;renderQ()} else finish() };
+
+/* ---------------- ENGINE ---------------- */
+function item(cat,tier,label,extra){ const [name,why]=cat[tier]; return Object.assign({label,name,why,tier},extra||{}); }
+
+function build(a){
+  const t = a.budget || C.defaultBudget || '$$';
+  const c = a.concerns||[];
+  const sensitive = a.type==='sensitive' || a.sens==='often';
+  const reactive = sensitive || a.sens==='sometimes';
+  const deepTone = ['olive','brown','deep'].includes(a.tone);
+  const preg = a.preg==='yes';
+  const acne = a.acne!=='no';
+  const melasma = c.includes('melasma');
+  const skinKey = sensitive ? 'sensitive' : (['oily','combination'].includes(a.type) ? 'oily' : 'dry');
+  const am=[], pm=[], notes=[], warns=[];
+
+  // ---- MORNING ----
+  am.push(item(P.cleanser[skinKey],t,'Cleanse',{ing:'Gentle cleanser',how:a.type==='dry'?'Or just rinse with lukewarm water if your skin feels tight.':''}));
+  if(melasma){
+    am.push(item(P.txaAM,t,'Brightening serum',{ing:'Tranexamic acid + niacinamide',how:'Apply 2–3 drops to dry skin.'}));
+  } else if(reactive || a.exp==='new'){
+    am.push(item(P.vitcGentle,t,'Brightening serum',{ing:t==='$'?'Vitamin C (gentle form)':'Gentle brightener',how:'Apply 2–3 drops to dry skin.'}));
+  } else {
+    am.push(item(P.vitc,t,'Vitamin C serum',{ing:'L-ascorbic acid 15–20%',how:'Apply 3–4 drops to dry skin. A slight tingle is normal; burning is not.'}));
+  }
+  if(acne && skinKey==='oily' && !melasma){
+    am.push(item(P.niacin,t,'Oil control (optional)',{ing:'Niacinamide',how:'Layer after your serum on oily areas.'}));
+  }
+  am.push(item(P.moist[skinKey],t,'Moisturize',{ing:'Barrier support'}));
+  const spfKey = melasma ? (deepTone?'tintDeep':'tintLight') : (deepTone?'deep':'light');
+  am.push(item(P.spf[spfKey],t,'Sunscreen (don’t skip this)',{ing:melasma?'Tinted SPF with iron oxides':'Broad-spectrum SPF 30+',how:'Use two finger-lengths for face and neck. Reapply every 2 hours outdoors. Without daily sunscreen, no brightening product will work.'}));
+
+  // ---- NIGHT ----
+  pm.push(item(P.cleanser[skinKey],t,'Cleanse',{ing:'Gentle cleanser',how:'Double cleanse with a cleansing balm or micellar water first if you wore makeup or sunscreen.'}));
+
+  // main brightening treatment
+  let main;
+  if(melasma) main = item(P.txaPM,t,'Pigment treatment',{ing:'Tranexamic acid',freq:'Every night'});
+  else if(preg || acne || c.includes('pih') || deepTone) main = item(P.azelaic,t,'Pigment treatment',{ing:'Azelaic acid 10%',freq:'Every night',how:'Can tingle for the first week or two. Start every other night if it stings.'});
+  else if(c.includes('spots') || c.includes('uneven')) main = item(P.arbutin,t,'Dark spot serum',{ing:'Alpha arbutin',freq:'Every night'});
+  else main = item(P.niacin,t,'Brightening serum',{ing:'Niacinamide',freq:'Every night'});
+  pm.push(main);
+
+  // retinoid
+  let retinoid=null;
+  if(!preg){
+    const cat = acne ? P.retinoidAcne : (a.exp==='pro' && !reactive ? P.retinoidPro : P.retinoidNew);
+    retinoid = item(cat,t,'Retinoid',{ing:acne?'Adapalene':'Retinol / retinoid',freq:sensitive?'2 nights a week':'Every other night',how:'Use a pea-sized amount on dry skin. Start 2 nights a week and build up slowly. Expect some dryness at first.'});
+    pm.push(retinoid);
+  }
+
+  // exfoliant
+  if(!sensitive){
+    const ex = acne||skinKey==='oily' ? P.bha : P.aha;
+    pm.push(item(ex,t,'Exfoliate',{ing:acne||skinKey==='oily'?'Salicylic acid (BHA)':'AHA (lactic / glycolic)',freq:melasma||deepTone?'1 night a week':'1–2 nights a week',how:retinoid?'Only on nights you don’t use your retinoid.':'Apply after cleansing, before your serum.'}));
+  }
+  pm.push(item(P.moist[skinKey],t,'Moisturize',{ing:'Barrier repair',how:skinKey==='dry'?'Use a generous layer. On retinoid nights, you can apply moisturizer first to cushion it.':''}));
+
+  // ---- NOTES ----
+  if(a.goal==='lighter') warns.push(['About lightening your natural skin tone','These products fade dark spots and uneven patches so your skin looks clear and even. They do not safely change your natural skin color, and products that promise to are often dangerous (see the safety tips).']);
+  if(preg) notes.push(['Pregnancy-safe plan','We left out retinoids and hydroquinone. Azelaic acid, vitamin C, niacinamide and sunscreen are generally considered safe, but check with your OB or midwife before starting anything new.']);
+  if(deepTone) notes.push(['For deeper skin tones','Irritation can leave new dark marks (post-inflammatory hyperpigmentation). Go slow, avoid scrubs and peel-off masks, and stop any product that burns.']);
+  if(melasma) notes.push(['Melasma tip','Melasma is driven by sun, heat and hormones. A tinted sunscreen, a hat and avoiding saunas and hot yoga matter as much as serums. If there’s no improvement after 3 months, a dermatologist can prescribe stronger options such as hydroquinone or a triple-combination cream.']);
+  if(sensitive) notes.push(['Sensitive skin','We kept exfoliants out and chose the gentlest actives. Patch test everything on your jaw or behind your ear for 3 days first.']);
+
+  return {am,pm,notes,warns,retinoid,main,a};
+}
+
+/* ---------------- RESULTS RENDER ---------------- */
+const label = (id,v)=>{const q=Q.find(x=>x.id===id);const o=q.opts.find(x=>x.v===v);return o?o.t:v};
+function stepHTML(s,i){
+  return `<div class="stepc"><div class="num">${i+1}</div><div>
+    <div class="lbl">${s.label}${s.freq?`<span class="freq">${s.freq}</span>`:''}</div>
+    <div class="prod">${s.name}<span class="tier">${s.tier}</span></div>
+    <div class="why">${s.why}</div>
+    ${s.how?`<div class="alt">💡 ${s.how}</div>`:''}
+    ${s.ing?`<span class="ing">Key ingredient: ${s.ing}</span>`:''}
+  </div></div>`;
+}
+function render(p){
+  const a=p.a;
+  $('#summary').innerHTML = [label('type',a.type),label('tone',a.tone),...(a.concerns||[]).map(v=>label('concerns',v)),...(a.budget?['Budget '+a.budget]:[])].map(x=>`<span class="chip">${x}</span>`).join('');
+  $('#topNotes').innerHTML = p.warns.map(w=>`<div class="note warn"><b>⚠️ ${w[0]}</b>${w[1]}</div>`).join('');
+  $('#p-am').innerHTML = `<h2>☀️ Morning routine</h2><p class="sub">About 3 minutes. Wait about 1 minute between serum and moisturizer.</p>`+p.am.map(stepHTML).join('');
+  $('#p-pm').innerHTML = `<h2>🌙 Night routine</h2><p class="sub">Night is when your treatment actives do the most work.</p>`+p.pm.map(stepHTML).join('')+
+    (p.retinoid?`<div class="note info"><b>🗓️ Sample week</b>Mon / Wed / Fri: retinoid<br>Tue / Thu / Sat: ${p.main.ing}${p.pm.some(s=>s.label==='Exfoliate')?' (+ exfoliant once)':''}<br>Sun: rest night (cleanse + moisturize)</div>`:'');
+  $('#p-tips').innerHTML = `<h2>📋 How to start</h2>
+    <div class="timeline">
+      <div class="tl"><span>Week 1–2</span><p>Cleanser, moisturizer and sunscreen only. Add your morning serum.</p></div>
+      <div class="tl"><span>Week 3–4</span><p>Add your night pigment treatment.</p></div>
+      <div class="tl"><span>Week 5+</span><p>${p.retinoid?'Add the retinoid 2 nights a week, then build up to every other night.':'Keep it consistent; patience is the active ingredient.'}</p></div>
+      <div class="tl"><span>Week 8–12</span><p>When most people see visible fading. Take a photo in the same light every 2 weeks to track progress.</p></div>
+    </div>
+    ${p.notes.map(n=>`<div class="note info"><b>${n[0]}</b>${n[1]}</div>`).join('')}
+    <div class="note warn"><b>🚫 Avoid these "whitening" products</b>
+      <ul class="clean">
+        <li>Creams listing <b>mercury</b>, mercurous chloride, calomel, "mercurio" or "quicksilver". These can cause kidney and nerve damage. Be wary of unlabeled creams sold online or at markets.</li>
+        <li>Creams containing <b>clobetasol</b> or other steroids. They thin the skin and cause stretch marks, acne and rebound darkening.</li>
+        <li><b>Hydroquinone</b> from unregulated sellers. In the US it is prescription-only; use it only with a doctor's guidance.</li>
+        <li><b>Glutathione injections</b> or IV drips sold for skin lightening. They are not FDA-approved for this use.</li>
+      </ul></div>
+    <div class="note info"><b>Golden rules</b>
+      <ul class="clean">
+        <li>Introduce one new product at a time, two weeks apart.</li>
+        <li>Never pick at spots or pimples; that creates new marks.</li>
+        <li>Stop any product that burns, swells or causes a rash.</li>
+        <li>See a dermatologist for a spot that changes shape, color or size, or for pigmentation that appears suddenly.</li>
+      </ul></div>`;
+  renderCTA();
+  setTab('am');
+}
+function setTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
+  ['am','pm','tips'].forEach(x=>$('#p-'+x).classList.toggle('hidden',x!==t));
+}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
+
+function finish(){ plan=build(A); store.set(skey(),A); render(plan); show('results'); }
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+$('#copyBtn').onclick = async ()=>{
+  const fmt = s=>`- ${s.label}${s.freq?' ('+s.freq+')':''}: ${s.name}`;
+  const txt = `MY BRIGHTENING ROUTINE from ${C.brandName}\n\nMORNING\n${plan.am.map(fmt).join('\n')}\n\nNIGHT\n${plan.pm.map(fmt).join('\n')}\n\nAdd one product at a time, 2 weeks apart. Wear sunscreen daily.${C.phone?'\n\n'+C.brandName+': '+C.phone:''}${C.bookingUrl?'\nBook: '+C.bookingUrl:''}`;
+  try{ await navigator.clipboard.writeText(txt); toast('Routine copied ✓'); }catch(e){ toast('Copy not available here'); }
+};
+$('#redoBtn').onclick = ()=>{A={};idx=0;show('quiz');renderQ()};
+
+
+/* ---------------- BRANDING ENGINE ---------------- */
+const esc = x => String(x).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const skey = () => 'skinquiz-'+C.brandName.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+function applyBrand(){
+  const r=document.documentElement.style, k=C.colors||{};
+  if(k.accent) r.setProperty('--accent',k.accent);
+  if(k.accentDark) r.setProperty('--accent-d',k.accentDark);
+  if(k.soft) r.setProperty('--soft',k.soft);
+  if(k.bg) r.setProperty('--bg',k.bg);
+  document.title = C.brandName+' — Skin Quiz';
+  $('#logo').innerHTML = C.logoUrl ? `<img src="${esc(C.logoUrl)}" alt="">` : esc(C.initials||C.brandName[0]);
+  $('#bname').textContent = C.brandName;
+  $('#tagline').textContent = C.tagline;
+  $('#sampleTag').classList.toggle('hidden',!C.sample);
+  document.querySelectorAll('.bn').forEach(e=>e.textContent=C.brandName);
+  // products: defaults + client overrides (same product for every budget tier)
+  P = JSON.parse(JSON.stringify(BASE_P));
+  Object.entries(C.products||{}).forEach(([key,val])=>{
+    const parts=key.split('.'); let o=P;
+    for(let i=0;i<parts.length-1;i++) o=o[parts[i]];
+    const last=parts[parts.length-1];
+    if(o && o[last]) o[last]={'$':val,'$$':val,'$$$':val};
+  });
+  QS = C.askBudget===false ? Q.filter(q=>q.id!=='budget') : Q;
+  $('#powered').textContent = (C.poweredBy && C.brandName!=='Sylvie Glow Guide') ? 'Powered by Sylvie Glow Guide' : '';
+  $('#lastBtn').classList.toggle('hidden',!store.get(skey()));
+  // demo switcher
+  const d=$('#demos');
+  if(C.showDemoSwitcher || CONFIG.showDemoSwitcher){
+    d.classList.remove('hidden');
+    d.innerHTML='Demo brands: <a href="#">Sylvie Glow Guide</a>'+Object.keys(DEMOS).map(k=>`<a href="#${k}">${esc(DEMOS[k].brandName)}</a>`).join('');
+  } else d.classList.add('hidden');
+}
+function renderCTA(){
+  const contact=[C.phone,C.address,C.instagram].filter(Boolean).map(esc).join(' · ');
+  $('#cta').innerHTML = `<h3>${esc(C.brandName)}</h3><p>${esc(C.ctaText)}</p>`+
+    (C.bookingUrl?`<a class="btn" href="${esc(C.bookingUrl)}" target="_blank" rel="noopener">${esc(C.bookingLabel)} →</a>`:'')+
+    (contact?`<div class="contact">${contact}</div>`:'');
+  $('#lead').classList.toggle('hidden',!C.leadCapture);
+  $('#leadForm').classList.remove('hidden'); $('#leadMsg').classList.add('hidden');
+}
+$('#leadForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const msg=$('#leadMsg');
+  const data={name:$('#lName').value,email:$('#lEmail').value,brand:C.brandName,
+    routine_am:plan.am.map(s=>s.name).join(' | '),routine_pm:plan.pm.map(s=>s.name).join(' | ')};
+  if(!C.leadEndpoint){
+    msg.textContent='Demo mode: nothing was sent. Once this quiz is hosted, this form sends the client\'s name, email and routine to the business.';
+  } else {
+    try{ const r=await fetch(C.leadEndpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
+      msg.textContent = r.ok ? 'Thanks! Your routine is on its way.' : 'Sorry, that didn\'t go through. Please try again.';
+    }catch(err){ msg.textContent='Sorry, that didn\'t go through. Please try again.'; }
+  }
+  msg.classList.remove('hidden'); if(C.leadEndpoint) $('#leadForm').classList.add('hidden');
+});
+$('#lastBtn').onclick = ()=>{const s=store.get(skey()); if(s){A=s;finish()}};
+function route(){
+  const h=location.hash.slice(1);
+  C = DEMOS[h] ? Object.assign({},CONFIG,{askBudget:true,leadCapture:false,bookingUrl:'',phone:'',address:'',instagram:'',products:{},logoUrl:''},DEMOS[h]) : CONFIG;
+  applyBrand(); A={}; idx=0; show('intro');
+}
+window.addEventListener('hashchange',route);
+route();
+</script>
+</body>
+</html>
