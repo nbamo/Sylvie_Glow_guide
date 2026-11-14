@@ -8,7 +8,7 @@ A skin-brightening quiz app: 9 questions, then personalized product picks and a 
 | `demo/index.html` | White-label demo for beauty businesses (`/demo/#lumiere`, `/demo/#beauty-supply`) |
 
 Both are self-contained static pages with no build step.
-
+The main page opens the skincare quiz, and the demo shows how a beauty business can brand it.
 ## Host with GitHub Pages
 Settings → Pages → Source: **Deploy from a branch** → Branch: `main`, folder `/ (root)` → Save.
 The site goes live at `https://<username>.github.io/<repo>/`.
